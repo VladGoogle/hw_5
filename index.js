@@ -8,7 +8,7 @@ const rl = readLine.createInterface({
 class Asker{
    async askSync(q){
         return new Promise((resolve,reject)=>{
-            rl.question(q, (position)=>{
+            rl.question(q, (data)=>{
             resolve(data)
         });
     });
@@ -16,30 +16,28 @@ class Asker{
 }
 
 class Cell extends Asker{  
-   value = 'x/0'
-   askSync(row, col) {
-       try {
-        this.value = await super.askSync("What element do you want to enter: 0 or x");
-       } catch(e) {
-           if(this.value !== 0 || this.value !== 'x')
+   value;
+   async askSync(row, col) {
+        this.value = await super.askSync("What element do you want to enter: 0 or x ");
+        console.log(this.value)
+           if(this.value !== '0' && this.value !== 'x')
            {
            console.log("Введите корректный символ: ")
+           //throw new Error("Вы ввели некоректный символ")
            await this.askSync()
            }
        }
-   }
     /* cell = await super.askSync("What element do you want to enter: 0 or x"); */
 }
 
-class Board {
+class Board extends Cell{
  arr = [[new Cell(),new Cell(),new Cell()],[new Cell(),new Cell(),new Cell()],[new Cell(),new Cell(),new Cell()]]
+ //arr = [[[],[],[]],[[],[],[]],[[],[],[]]]
  async game() {
-     for(const row of arr) {
+     for(const row of this.arr) {
          for(const cell of row) {
-             await cell.askSync()
-             rl.question("Your matrix: ", (arr)=>{
-                console.log(arr)
-            })
+             await super.askSync()
+                console.log(this.arr)
          }
      }
 
@@ -103,4 +101,9 @@ return val
 }
 
 let board = new Board();
-await board.game();
+//board.game().then(() => {}).catch(() => {})
+(async () => {
+    await board.game()
+    })()
+/*let cell = new Cell()
+cell.askSync().then(() => {}).catch(() => {})*/
